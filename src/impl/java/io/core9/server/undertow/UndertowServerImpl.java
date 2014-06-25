@@ -1,0 +1,61 @@
+package io.core9.server.undertow;
+
+import io.core9.core.executor.Executor;
+import io.core9.plugin.server.HostManager;
+import io.core9.plugin.server.Server;
+import io.core9.plugin.server.VirtualHost;
+import io.core9.plugin.server.handler.Middleware;
+import io.core9.plugin.template.TemplateEngine;
+import io.undertow.Undertow;
+import net.xeoh.plugins.base.annotations.PluginImplementation;
+import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
+
+import org.apache.log4j.Logger;
+
+@PluginImplementation
+public class UndertowServerImpl implements Server, Executor {
+	
+	@InjectPlugin
+	private HostManager hostManager;
+	
+	@InjectPlugin
+	private TemplateEngine<String> engine;
+	
+	private static final Logger LOG = Logger.getLogger(UndertowServerImpl.class);
+	
+	private MiddlewareHandler handler = new MiddlewareHandler();
+
+	@Override
+	public void use(String pattern, Middleware middleware) {
+		LOG.info("Registring middleware : " + middleware.toString() + " with pattern : " + pattern);
+		handler.addMiddleware(pattern, middleware);
+	}
+
+	@Override
+	public void use(VirtualHost vhost, String pattern, Middleware middleware) {
+		LOG.info("Registring: " + pattern + " on vhost: " + vhost.getHostname());
+		handler.addMiddleware(vhost, pattern, middleware);
+	}
+
+	@Override
+	public void deregister(String pattern) {
+		handler.deregister(pattern);
+	}
+
+	@Override
+	public void deregister(VirtualHost vhost, String pattern) {
+		handler.deregister(vhost, pattern);
+	}
+
+	@Override
+	public void execute() {
+		handler.setHostManager(hostManager);
+		ResponseImpl.setTemplateEngine(engine);
+		Undertow server = Undertow.builder()
+				.setHandler(handler)
+				.addHttpListener(8080, "localhost")
+				.build();
+		server.start();
+	}
+
+}
