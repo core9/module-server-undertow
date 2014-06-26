@@ -174,10 +174,10 @@ public class RequestImpl implements Request {
 
 	@Override
 	public Cookie getCookie(String name) {
-		if(!exchange.getResponseCookies().containsKey(name)) {
+		if(!exchange.getRequestCookies().containsKey(name)) {
 			return null;
 		}
-		return new CookieImpl(exchange.getResponseCookies().get(name));
+		return new CookieImpl(exchange.getRequestCookies().get(name));
 	}
 
 	@Override
