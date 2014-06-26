@@ -36,6 +36,7 @@ public class RequestImpl implements Request {
 	private ResponseImpl response;
 	
 	private String strBody;
+	
 	private Observable<String> body = Observable.create( (OnSubscribe<String>) subscriber -> {
 		if(strBody != null) {
 			subscriber.onNext(strBody);
