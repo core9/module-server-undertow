@@ -1,6 +1,7 @@
 package io.core9.server.undertow;
 
 import io.core9.core.executor.Executor;
+import io.core9.plugin.server.Cookie;
 import io.core9.plugin.server.HostManager;
 import io.core9.plugin.server.Server;
 import io.core9.plugin.server.VirtualHost;
@@ -45,6 +46,16 @@ public class UndertowServerImpl implements Server, Executor {
 	@Override
 	public void deregister(VirtualHost vhost, String pattern) {
 		handler.deregister(vhost, pattern);
+	}
+	
+	@Override
+	public Cookie newCookie(String name, String value) {
+		return new CookieImpl(new io.undertow.server.handlers.CookieImpl(name, value));
+	}
+
+	@Override
+	public Cookie newCookie(String name) {
+		return new CookieImpl(new io.undertow.server.handlers.CookieImpl(name));
 	}
 
 	@Override

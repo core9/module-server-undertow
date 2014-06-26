@@ -5,6 +5,7 @@ import io.core9.plugin.server.VirtualHost;
 import io.core9.plugin.server.request.Response;
 import io.core9.plugin.template.TemplateEngine;
 import io.undertow.server.HttpServerExchange;
+import io.undertow.util.Headers;
 import io.undertow.util.HttpString;
 
 import java.nio.ByteBuffer;
@@ -12,6 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import net.minidev.json.JSONValue;
 
 public class ResponseImpl implements Response {
 	private final VirtualHost vhost;
@@ -113,43 +116,40 @@ public class ResponseImpl implements Response {
 
 	@Override
 	public void sendJsonMap(Map<String, Object> map) {
-		// TODO Auto-generated method stub
-
+		this.exchange.getResponseSender().send(JSONValue.toJSONString(map));
 	}
 
 	@Override
 	public void sendJsonArray(List<? extends Object> list) {
-		// TODO Auto-generated method stub
-
+		this.exchange.getResponseSender().send(JSONValue.toJSONString(list));
 	}
 
 	@Override
 	public void sendJsonArray(Set<? extends Object> list) {
-		// TODO Auto-generated method stub
-
+		this.exchange.getResponseSender().send(JSONValue.toJSONString(list));
 	}
 
 	@Override
 	public void sendRedirect(int status, String url) {
-		// TODO Auto-generated method stub
-
+		this.exchange.setResponseCode(status);
+		this.exchange.getResponseHeaders().put(Headers.LOCATION, url);
+		this.exchange.endExchange();
 	}
 
 	@Override
 	public Response putHeader(String name, String value) {
-		// TODO Auto-generated method stub
-		return null;
+		this.exchange.getResponseHeaders().put(new HttpString(name), value);
+		return this;
 	}
 
 	@Override
 	public Response addCookie(Cookie cookie) {
-		// TODO Auto-generated method stub
-		return null;
+		this.exchange.getResponseCookies().put(cookie.getName(), ((CookieImpl) cookie).getServerCookie());
+		return this;
 	}
 
 	@Override
 	public boolean isEnded() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
