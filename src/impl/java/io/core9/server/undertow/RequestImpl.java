@@ -13,9 +13,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import net.minidev.json.JSONArray;
@@ -59,6 +61,12 @@ public class RequestImpl implements Request {
 	public RequestImpl(VirtualHost vhost, HttpServerExchange exchange) {
 		this.exchange = exchange;
 		this.vhost = vhost;
+		if(exchange.getQueryParameters().size() > 0) {
+			this.params = new HashMap<String,Object>();
+			for(Entry<String, Deque<String>> entry : exchange.getQueryParameters().entrySet()) {
+				this.params.put(entry.getKey(), entry.getValue().getLast()); // FIXME: Handle all query params (is multiple possible?)
+			}
+		}
 	}
 
 	@Override
