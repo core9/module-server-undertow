@@ -156,6 +156,7 @@ public class ResponseImpl implements Response {
 	public ResponseImpl(VirtualHost vhost, HttpServerExchange exchange) {
 		this.vhost = vhost;
 		this.exchange = exchange;
+		this.addGlobal("hostname", vhost.getHostname());
 	}
 	
 	private String processTemplate() throws Exception {
