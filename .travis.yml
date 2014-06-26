@@ -1,8 +1,10 @@
 language: java
+jdk:
+- oraclejdk8
 env:
   global:
-    - TERM=dumb
-    - secure: BINTRAY_USER
-    - secure: BINTRAY_KEY
-install: 
-  - "./gradlew clean test build publish publishBintray"
+  - TERM=dumb
+  - secure: X1Tt/GdgvY0Kze1YGKWBzJMd1R7DDdRpUsbjwAqGs9jUuBi2RjxGKnFJSoPcuWrRGfVKo8VaK3PQAaOXPF/gaRanSEsqc++wADKHGtCLvkesuP7gYj/tDzI75naMrpg/peovmiWco6vW/7/tf7IrUTcJ4vuYfJ3buhRa0+6shV0=
+  - secure: FeN6B6vBoufm2bQFQXPRLNZpnz/tIPYjGOz+wgL0dp7PPb6EsisyLf8Jj4nzlEpiOSGA0M40H3REexsWi3oY9CAHUrNW9TKCR87p/ZFPcs4dSZ5q8cj82qoTz1qmJ5f4EOWmvcNBGNDv4AE2PPUnpPikuXV21i9FaYLKJO5qRp0=
+install:
+- ./gradlew clean test build publish publishBintray
