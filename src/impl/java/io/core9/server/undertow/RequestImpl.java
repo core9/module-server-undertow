@@ -31,7 +31,7 @@ import com.google.common.io.CharStreams;
 
 public class RequestImpl implements Request {
 	
-	private final HttpServerExchange exchange;
+	private HttpServerExchange exchange;
 	private final VirtualHost vhost;
 	private Map<String,Object> params;
 	private Map<String,Object> context;
