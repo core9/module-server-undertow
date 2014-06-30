@@ -7,6 +7,7 @@ import io.core9.plugin.server.handler.Middleware;
 import io.core9.plugin.server.request.Response;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
+import io.undertow.util.SameThreadExecutor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,6 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -61,6 +63,10 @@ public class MiddlewareHandler implements HttpHandler {
 
 	@Override
 	public void handleRequest(HttpServerExchange exchange) throws Exception {
+		if(exchange.isInIoThread()) {
+			exchange.dispatch(this);
+			return;
+		}
 		VirtualHost vhost = hosts.get(exchange.getHostAndPort());
 		RequestImpl req = new RequestImpl(vhost, exchange);
 		for(Binding binding : VHOST_BINDINGS.get(req.getVirtualHost())) {
