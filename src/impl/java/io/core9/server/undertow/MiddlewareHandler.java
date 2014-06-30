@@ -4,6 +4,7 @@ import io.core9.plugin.server.HostManager;
 import io.core9.plugin.server.VirtualHost;
 import io.core9.plugin.server.handler.Binding;
 import io.core9.plugin.server.handler.Middleware;
+import io.core9.plugin.server.request.Response;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 
@@ -20,9 +21,11 @@ public class MiddlewareHandler implements HttpHandler {
 	
 	private static final List<Binding> BINDINGS = new ArrayList<Binding>();
 	private static final Map<VirtualHost,List<Binding>> VHOST_BINDINGS = new HashMap<>();
+	private HostManager hostManager;
 	private Map<String,VirtualHost> hosts;
 	
 	public void setHostManager(HostManager hostManager) {
+		this.hostManager = hostManager;
 		this.hosts = hostManager.getVirtualHostsByHostname();
 	}
 		
@@ -66,7 +69,20 @@ public class MiddlewareHandler implements HttpHandler {
 		for(Binding binding : BINDINGS) {
 			binding.handle(req);
 		}
-		req.getResponse().end();
+		Response response = req.getResponse();
+		if(!response.isEnded()) {
+			if(response.getTemplate() != null || response.getValues().size() > 0) {
+				response.end();
+			} else {
+				String alias = hostManager.getURLAlias(req.getVirtualHost(), req.getPath());
+				if(alias != null) {
+					response.sendRedirect(307, alias);
+				} else {
+					//response.setStatusCode(404);
+					response.end("Not found");
+				}
+			}
+		}
 	}
 	
 	public static Binding createBinding(String pattern, Middleware middleware) {
