@@ -158,6 +158,11 @@ public class ResponseImpl implements Response {
 	public boolean isEnded() {
 		return ended;
 	}
+	
+	@Override
+	public void setEnded(boolean ended) {
+		this.ended = ended;
+	}
 
 	public ResponseImpl(VirtualHost vhost, HttpServerExchange exchange) {
 		this.vhost = vhost;
