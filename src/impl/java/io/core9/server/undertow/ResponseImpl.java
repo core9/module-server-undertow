@@ -23,6 +23,7 @@ public class ResponseImpl implements Response {
 	private String template;
 	private final Map<String, Object> values = new HashMap<String, Object>();
 	private final Map<String, Object> globals = new HashMap<String, Object>();
+	private boolean ended = false;
 
 	public static void setTemplateEngine(TemplateEngine<String> engine) {
 		templateEngine = engine;
@@ -76,6 +77,7 @@ public class ResponseImpl implements Response {
 	@Override
 	public Response setStatusMessage(String message) {
 		exchange.getResponseSender().send(message);
+		this.ended = true;
 		return this;
 	}
 
@@ -86,12 +88,15 @@ public class ResponseImpl implements Response {
 
 	@Override
 	public void end(String chunk) {
-		exchange.getResponseSender().send(chunk);
+		if(!this.ended) {
+			exchange.getResponseSender().send(chunk);
+			this.ended = true;
+		}
 	}
 
 	@Override
 	public void end() {
-		if(this.template != null) {
+		if(!this.ended && this.template != null) {
 			String result = "";
 			try {
 				result = processTemplate();
@@ -104,29 +109,29 @@ public class ResponseImpl implements Response {
 
 	@Override
 	public Response sendFile(String filename) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public Response sendBinary(byte[] data) {
 		this.exchange.getResponseSender().send(ByteBuffer.wrap(data));
+		this.ended = true;
 		return this;
 	}
 
 	@Override
 	public void sendJsonMap(Map<String, Object> map) {
-		this.exchange.getResponseSender().send(JSONValue.toJSONString(map));
+		end(JSONValue.toJSONString(map));
 	}
 
 	@Override
 	public void sendJsonArray(List<? extends Object> list) {
-		this.exchange.getResponseSender().send(JSONValue.toJSONString(list));
+		end(JSONValue.toJSONString(list));
 	}
 
 	@Override
 	public void sendJsonArray(Set<? extends Object> list) {
-		this.exchange.getResponseSender().send(JSONValue.toJSONString(list));
+		end(JSONValue.toJSONString(list));
 	}
 
 	@Override
@@ -134,6 +139,7 @@ public class ResponseImpl implements Response {
 		this.exchange.setResponseCode(status);
 		this.exchange.getResponseHeaders().put(Headers.LOCATION, url);
 		this.exchange.endExchange();
+		this.ended = true;
 	}
 
 	@Override
@@ -150,7 +156,12 @@ public class ResponseImpl implements Response {
 
 	@Override
 	public boolean isEnded() {
-		return false;
+		return ended;
+	}
+	
+	@Override
+	public void setEnded(boolean ended) {
+		this.ended = ended;
 	}
 
 	public ResponseImpl(VirtualHost vhost, HttpServerExchange exchange) {
