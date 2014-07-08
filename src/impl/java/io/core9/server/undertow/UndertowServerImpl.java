@@ -71,7 +71,7 @@ public class UndertowServerImpl implements Server, Executor {
 		ResponseImpl.setTemplateEngine(engine);
 		Undertow server = Undertow.builder()
 				.setHandler(handler)
-				.addHttpListener(port, "localhost")
+				.addHttpListener(port, "0.0.0.0")
 				.build();
 		server.start();
 	}
