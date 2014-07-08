@@ -68,6 +68,10 @@ public class RequestImpl implements Request {
 			}
 		}
 	}
+	
+	public HttpServerExchange getExchange() {
+		return exchange;
+	}
 
 	@Override
 	public String getPath() {

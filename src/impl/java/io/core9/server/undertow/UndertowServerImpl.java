@@ -26,6 +26,8 @@ public class UndertowServerImpl implements Server, Executor {
 	
 	private MiddlewareHandler handler = new MiddlewareHandler();
 
+	private int port = 8080;
+
 	@Override
 	public void use(String pattern, Middleware middleware) {
 		LOG.info("Registring middleware : " + middleware.toString() + " with pattern : " + pattern);
@@ -60,11 +62,16 @@ public class UndertowServerImpl implements Server, Executor {
 
 	@Override
 	public void execute() {
+		
+		if(System.getProperty("PORT") != null)
+		{
+			port = Integer.parseInt(System.getProperty("PORT")); 
+		}
 		handler.setHostManager(hostManager);
 		ResponseImpl.setTemplateEngine(engine);
 		Undertow server = Undertow.builder()
 				.setHandler(handler)
-				.addHttpListener(8080, "localhost")
+				.addHttpListener(port, "localhost")
 				.build();
 		server.start();
 	}
