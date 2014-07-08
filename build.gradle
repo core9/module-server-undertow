@@ -27,5 +27,4 @@ dependencies {
 	implCompile 'io.undertow:undertow-core:+'
 	implCompile 'net.minidev:json-smart:+'
 	implCompile 'com.netflix.rxjava:rxjava-core:+'
-	testCompile 'io.core9:core:+'
 }
