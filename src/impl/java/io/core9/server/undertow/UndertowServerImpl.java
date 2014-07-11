@@ -39,6 +39,11 @@ public class UndertowServerImpl implements Server, Executor {
 		LOG.info("Registring: " + pattern + " on vhost: " + vhost.getHostname());
 		handler.addMiddleware(vhost, pattern, middleware);
 	}
+	
+	@Override
+	public void remove(VirtualHost vhost) {
+		handler.remove(vhost);
+	}
 
 	@Override
 	public void deregister(String pattern) {

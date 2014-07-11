@@ -59,6 +59,10 @@ public class MiddlewareHandler implements HttpHandler {
 			}
 		}
 	}
+	
+	public void remove(VirtualHost vhost) {
+		VHOST_BINDINGS.remove(vhost);
+	}
 
 	@Override
 	public void handleRequest(HttpServerExchange exchange) throws Exception {
