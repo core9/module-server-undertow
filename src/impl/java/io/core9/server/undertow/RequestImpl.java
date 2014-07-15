@@ -83,7 +83,6 @@ public class RequestImpl implements Request {
 									HeaderValues content = value.getHeaders().get(Headers.CONTENT_DISPOSITION);
 									String folder = "/";
 									for(String item : content) {
-										System.out.println(item);
 										int idx = item.indexOf("name=\"");
 										if(idx != -1) {
 											folder = item.substring(idx + 6);
