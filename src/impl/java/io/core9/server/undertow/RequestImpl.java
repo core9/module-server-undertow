@@ -86,7 +86,7 @@ public class RequestImpl implements Request {
 										int idx = item.indexOf("name=\"");
 										if(idx != -1) {
 											folder = item.substring(idx + 6);
-											folder = folder.substring(0, item.indexOf(";") -2);
+											folder = folder.substring(0, folder.indexOf(";") -1);
 										}
 									};
 									files.add(new FileUploadImpl(folder + value.getFileName(), 
