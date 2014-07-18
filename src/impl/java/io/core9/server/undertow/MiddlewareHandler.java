@@ -72,25 +72,26 @@ public class MiddlewareHandler implements HttpHandler {
 		VirtualHost vhost = hosts.get(exchange.getHostAndPort());
 		if(vhost == null) {
 			exchange.getResponseSender().send("Host unknown, create a VirtualHost first");
-		}
-		RequestImpl req = new RequestImpl(vhost, exchange);
-		for(Binding binding : VHOST_BINDINGS.get(req.getVirtualHost())) {
-			binding.handle(req);
-		}
-		for(Binding binding : BINDINGS) {
-			binding.handle(req);
-		}
-		Response response = req.getResponse();
-		if(!response.isEnded()) {
-			if(response.getTemplate() != null || response.getValues().size() > 0) {
-				response.end();
-			} else {
-				String alias = hostManager.getURLAlias(req.getVirtualHost(), req.getPath());
-				if(alias != null) {
-					response.sendRedirect(307, alias);
+		} else {
+			RequestImpl req = new RequestImpl(vhost, exchange);
+			for(Binding binding : VHOST_BINDINGS.get(req.getVirtualHost())) {
+				binding.handle(req);
+			}
+			for(Binding binding : BINDINGS) {
+				binding.handle(req);
+			}
+			Response response = req.getResponse();
+			if(!response.isEnded()) {
+				if(response.getTemplate() != null || response.getValues().size() > 0) {
+					response.end();
 				} else {
-					//response.setStatusCode(404);
-					response.end("Not found");
+					String alias = hostManager.getURLAlias(req.getVirtualHost(), req.getPath());
+					if(alias != null) {
+						response.sendRedirect(307, alias);
+					} else {
+						//response.setStatusCode(404);
+						response.end("Not found");
+					}
 				}
 			}
 		}
