@@ -1,6 +1,5 @@
 package io.core9.server.undertow;
 
-import io.core9.core.executor.Executor;
 import io.core9.plugin.server.Cookie;
 import io.core9.plugin.server.HostManager;
 import io.core9.plugin.server.Server;
@@ -9,15 +8,20 @@ import io.core9.plugin.server.handler.Middleware;
 import io.core9.plugin.template.TemplateEngine;
 import io.undertow.Undertow;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
+import net.xeoh.plugins.base.annotations.events.PluginLoaded;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
 
 import org.apache.log4j.Logger;
 
 @PluginImplementation
-public class UndertowServerImpl implements Server, Executor {
+public class UndertowServerImpl implements Server {
 	
-	@InjectPlugin
 	private HostManager hostManager;
+	
+	@PluginLoaded
+	public void setHostManager(HostManager hostManager) {
+		this.hostManager = hostManager;
+	}
 	
 	@InjectPlugin
 	private TemplateEngine<String> engine;
@@ -67,18 +71,28 @@ public class UndertowServerImpl implements Server, Executor {
 
 	@Override
 	public void execute() {
-		
-		if(System.getProperty("PORT") != null)
-		{
+		if(System.getProperty("PORT") != null) {
 			port = Integer.parseInt(System.getProperty("PORT")); 
 		}
-		handler.setHostManager(hostManager);
+		if(handler != null) {
+			handler.setHostManager(hostManager);
+		}
 		ResponseImpl.setTemplateEngine(engine);
 		Undertow server = Undertow.builder()
 				.setHandler(handler)
 				.addHttpListener(port, "0.0.0.0")
 				.build();
 		server.start();
+	}
+
+	@Override
+	public void addVirtualHost(VirtualHost vhost) {
+		handler.addHost(vhost);
+	}
+
+	@Override
+	public void removeVirtualHost(VirtualHost vhost) {
+		handler.removeHost(vhost);
 	}
 
 }

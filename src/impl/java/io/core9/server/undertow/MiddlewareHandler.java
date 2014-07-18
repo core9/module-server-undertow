@@ -23,11 +23,10 @@ public class MiddlewareHandler implements HttpHandler {
 	private static final List<Binding> BINDINGS = new ArrayList<Binding>();
 	private static final Map<VirtualHost,List<Binding>> VHOST_BINDINGS = new HashMap<>();
 	private HostManager hostManager;
-	private Map<String,VirtualHost> hosts;
+	private Map<String,VirtualHost> hosts = new HashMap<>();
 	
 	public void setHostManager(HostManager hostManager) {
 		this.hostManager = hostManager;
-		this.hosts = hostManager.getVirtualHostsByHostname();
 	}
 		
 	public void addMiddleware(String pattern, Middleware middleware) {
@@ -71,6 +70,9 @@ public class MiddlewareHandler implements HttpHandler {
 			return;
 		}
 		VirtualHost vhost = hosts.get(exchange.getHostAndPort());
+		if(vhost == null) {
+			exchange.getResponseSender().send("Host unknown, create a VirtualHost first");
+		}
 		RequestImpl req = new RequestImpl(vhost, exchange);
 		for(Binding binding : VHOST_BINDINGS.get(req.getVirtualHost())) {
 			binding.handle(req);
@@ -110,5 +112,14 @@ public class MiddlewareHandler implements HttpHandler {
 		m.appendTail(sb);
 		String regex = sb.toString();
 		return new Binding(pattern, Pattern.compile(regex), groups, middleware);
+	}
+
+	public void addHost(VirtualHost vhost) {
+		hosts.put(vhost.getHostname(), vhost);
+	}
+	
+	public void removeHost(VirtualHost vhost) {
+		VHOST_BINDINGS.remove(vhost);
+		hosts.remove(vhost.getHostname());
 	}
 }
