@@ -73,34 +73,39 @@ public class RequestImpl implements Request {
 				} else {
 					FormDataParser parser = FormParserFactory.builder().build().createParser(exchange);
 					if (parser != null) {
-						FormData data = parser.parseBlocking();
-						mapBody = new JSONObject();
-						data.forEach((key) -> {
-							Deque<FormValue> values = data.get(key);
-							List<FileUpload> files = new ArrayList<FileUpload>();
-							for (FormValue value : values) {
-								if (value.isFile()) {
-									HeaderValues content = value.getHeaders().get(Headers.CONTENT_DISPOSITION);
-									String folder = "/";
-									for(String item : content) {
-										int idx = item.indexOf("name=\"");
-										if(idx != -1) {
-											folder = item.substring(idx + 6);
-											folder = folder.substring(0, folder.indexOf(";") -1);
-										}
-									};
-									files.add(new FileUploadImpl(folder + value.getFileName(), 
-											value.getHeaders().getFirst(Headers.CONTENT_TYPE_STRING), 
-											value.getFile().getPath()));
+						try {
+							FormData data = parser.parseBlocking();
+							mapBody = new JSONObject();
+							data.forEach((key) -> {
+								Deque<FormValue> values = data.get(key);
+								List<FileUpload> files = new ArrayList<FileUpload>();
+								for (FormValue value : values) {
+									if (value.isFile()) {
+										HeaderValues content = value.getHeaders().get(Headers.CONTENT_DISPOSITION);
+										String folder = "/";
+										for(String item : content) {
+											int idx = item.indexOf("name=\"");
+											if(idx != -1) {
+												folder = item.substring(idx + 6);
+												folder = folder.substring(0, folder.indexOf(";") -1);
+											}
+										};
+										files.add(new FileUploadImpl(folder + value.getFileName(), 
+												value.getHeaders().getFirst(Headers.CONTENT_TYPE_STRING), 
+												value.getFile().getPath()));
+									}
 								}
-							}
-							if (files.isEmpty()) {
-								mapBody.put(key, data.get(key));
-							} else {
-								context.put("files", files);
-							}
-						});
-						strBody = mapBody.toJSONString();
+								if (files.isEmpty()) {
+									// FIXME getFirst(), what about the rest?
+									mapBody.put(key, data.get(key).getFirst().getValue());
+								} else {
+									context.put("files", files);
+								}
+							});
+							strBody = mapBody.toJSONString();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					} else {
 						strBody = CharStreams.toString(new InputStreamReader(exchange.getInputStream()));
 					}
