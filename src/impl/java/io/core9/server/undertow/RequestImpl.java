@@ -250,4 +250,9 @@ public class RequestImpl implements Request {
 		return exchange.getHostAndPort();
 	}
 
+	@Override
+	public String getSourceHost() {
+		return exchange.getSourceAddress().getHostName();
+	}
+
 }
