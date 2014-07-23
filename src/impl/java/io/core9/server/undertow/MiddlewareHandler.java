@@ -74,10 +74,10 @@ public class MiddlewareHandler implements HttpHandler {
 			exchange.getResponseSender().send("Host unknown, create a VirtualHost first");
 		} else {
 			RequestImpl req = new RequestImpl(vhost, exchange);
-			for(Binding binding : VHOST_BINDINGS.get(req.getVirtualHost())) {
+			for(Binding binding : BINDINGS) {
 				binding.handle(req);
 			}
-			for(Binding binding : BINDINGS) {
+			for(Binding binding : VHOST_BINDINGS.get(req.getVirtualHost())) {
 				binding.handle(req);
 			}
 			Response response = req.getResponse();
