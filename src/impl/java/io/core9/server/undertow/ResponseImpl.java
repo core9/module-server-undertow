@@ -88,7 +88,7 @@ public class ResponseImpl implements Response {
 
 	@Override
 	public void end(String chunk) {
-		if(!this.ended) {
+		if (!this.ended) {
 			exchange.getResponseSender().send(chunk);
 			this.ended = true;
 		}
@@ -96,7 +96,7 @@ public class ResponseImpl implements Response {
 
 	@Override
 	public void end() {
-		if(!this.ended && this.template != null) {
+		if (!this.ended && this.template != null) {
 			String result = "";
 			try {
 				result = processTemplate();
@@ -158,7 +158,7 @@ public class ResponseImpl implements Response {
 	public boolean isEnded() {
 		return ended;
 	}
-	
+
 	@Override
 	public void setEnded(boolean ended) {
 		this.ended = ended;
@@ -169,12 +169,16 @@ public class ResponseImpl implements Response {
 		this.exchange = exchange;
 		this.addGlobal("hostname", vhost.getHostname());
 	}
-	
+
 	private String processTemplate() throws Exception {
 		String contentType = exchange.getResponseHeaders().getFirst("Content-Type");
-		if(contentType == null) {
+		if (contentType == null) {
 			// Default to text/html content type
 			exchange.getResponseHeaders().add(new HttpString("Content-Type"), "text/html");
+		}
+		if (System.getProperty("GLOBAL_SERVER_VARS") != null) {
+			if (System.getProperty("GLOBAL_SERVER_VARS").equals("true"))
+				this.addGlobal("SERVER", new ResponseGlobalsImpl(exchange).getServerEnvironment());
 		}
 		return templateEngine.render(vhost, template, values, globals);
 	}
