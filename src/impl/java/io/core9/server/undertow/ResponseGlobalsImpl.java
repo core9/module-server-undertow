@@ -8,6 +8,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -55,7 +56,7 @@ public class ResponseGlobalsImpl implements ResponseGlobals {
 		uriMap.put("host", uri.getHost());
 		uriMap.put("path", uri.getPath());
 		uriMap.put("lasturipartnoext", lasturipartnoext);
-		uriMap.put("uriparts", uriParts);
+		uriMap.put("uriparts", Arrays.asList(uriParts));
 		uriMap.put("port", uri.getPort());
 		uriMap.put("scheme", uri.getScheme());
 		
