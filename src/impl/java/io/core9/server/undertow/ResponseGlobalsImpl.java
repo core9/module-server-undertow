@@ -68,7 +68,7 @@ public class ResponseGlobalsImpl implements ResponseGlobals {
 		}
 		
 		try {
-			if(urli != null){
+			if(urli != null && !query.equals("")){
 				uriMap.put("query", splitQuery(urli));				
 			}else{
 				uriMap.put("query", new HashMap<String, Object>());
