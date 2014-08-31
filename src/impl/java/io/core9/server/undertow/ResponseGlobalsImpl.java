@@ -44,9 +44,9 @@ public class ResponseGlobalsImpl implements ResponseGlobals {
 			
 		}
 		
-		String pathnoext = "";
+		String lasturipartnoext = "";
 		try{
-			pathnoext = uriParts[uriParts.length - 1].split("\\.")[0];
+			lasturipartnoext = uriParts[uriParts.length - 1].split("\\.")[0];
 		}catch(Exception e){
 			
 		}
@@ -54,7 +54,8 @@ public class ResponseGlobalsImpl implements ResponseGlobals {
 		Map<String, Object> uriMap = new HashMap<String, Object>();
 		uriMap.put("host", uri.getHost());
 		uriMap.put("path", uri.getPath());
-		uriMap.put("pathnoext", pathnoext);
+		uriMap.put("lasturipartnoext", lasturipartnoext);
+		uriMap.put("uriparts", uriParts);
 		uriMap.put("port", uri.getPort());
 		uriMap.put("scheme", uri.getScheme());
 		
