@@ -1,5 +1,7 @@
 package io.core9.server.undertow;
 
+import io.undertow.server.HttpServerExchange;
+
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -11,8 +13,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import io.undertow.server.HttpServerExchange;
 
 public class ResponseGlobalsImpl implements ResponseGlobals {
 
@@ -35,9 +35,26 @@ public class ResponseGlobalsImpl implements ResponseGlobals {
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
+		
+		String[] uriParts = null;
+		
+		try{
+			uriParts = uri.getPath().substring(1).split("/");
+		}catch(Exception e){
+			
+		}
+		
+		String pathnoext = "";
+		try{
+			pathnoext = uriParts[uriParts.length - 1].split("\\.")[0];
+		}catch(Exception e){
+			
+		}
+		
 		Map<String, Object> uriMap = new HashMap<String, Object>();
 		uriMap.put("host", uri.getHost());
 		uriMap.put("path", uri.getPath());
+		uriMap.put("pathnoext", pathnoext);
 		uriMap.put("port", uri.getPort());
 		uriMap.put("scheme", uri.getScheme());
 		
