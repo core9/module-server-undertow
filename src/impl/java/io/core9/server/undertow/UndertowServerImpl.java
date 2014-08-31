@@ -71,6 +71,9 @@ public class UndertowServerImpl implements Server {
 
 	@Override
 	public void execute() {
+		System.out.println("available enviroment settings : ");
+		System.out.println("PORT");
+		System.out.println("GLOBAL_SERVER_VARS");
 		if(System.getProperty("PORT") != null) {
 			port = Integer.parseInt(System.getProperty("PORT")); 
 		}
