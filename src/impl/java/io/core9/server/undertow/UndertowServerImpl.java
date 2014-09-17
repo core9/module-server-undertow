@@ -7,6 +7,7 @@ import io.core9.plugin.server.VirtualHost;
 import io.core9.plugin.server.handler.Middleware;
 import io.core9.plugin.template.TemplateEngine;
 import io.undertow.Undertow;
+import io.undertow.UndertowOptions;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.events.PluginLoaded;
 import net.xeoh.plugins.base.annotations.injections.InjectPlugin;
@@ -71,9 +72,6 @@ public class UndertowServerImpl implements Server {
 
 	@Override
 	public void execute() {
-		System.out.println("available enviroment settings : ");
-		System.out.println("PORT");
-		System.out.println("GLOBAL_SERVER_VARS");
 		if(System.getProperty("PORT") != null) {
 			port = Integer.parseInt(System.getProperty("PORT")); 
 		}
@@ -82,6 +80,7 @@ public class UndertowServerImpl implements Server {
 		}
 		ResponseImpl.setTemplateEngine(engine);
 		Undertow server = Undertow.builder()
+				.setServerOption(UndertowOptions.IDLE_TIMEOUT, 15000)
 				.setHandler(handler)
 				.addHttpListener(port, "0.0.0.0")
 				.build();
