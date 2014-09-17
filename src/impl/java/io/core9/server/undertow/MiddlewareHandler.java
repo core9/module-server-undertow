@@ -7,6 +7,7 @@ import io.core9.plugin.server.handler.Middleware;
 import io.core9.plugin.server.request.Response;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
+import io.undertow.util.Headers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,10 +19,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
+
 public class MiddlewareHandler implements HttpHandler {
 	
 	private static final List<Binding> BINDINGS = new ArrayList<Binding>();
 	private static final Map<VirtualHost,List<Binding>> VHOST_BINDINGS = new HashMap<>();
+	private static final Logger LOGGER = Logger.getLogger(MiddlewareHandler.class);
 	private HostManager hostManager;
 	private Map<String,VirtualHost> hosts = new HashMap<>();
 	
@@ -69,6 +73,10 @@ public class MiddlewareHandler implements HttpHandler {
 			exchange.dispatch(this);
 			return;
 		}
+		LOGGER.debug("Handling request on "
+				+ "host: " + exchange.getHostAndPort() + ", "
+				+ "path: " + exchange.getRequestPath() + ", "
+				+ "client: " + exchange.getSourceAddress().getHostString());
 		VirtualHost vhost = hosts.get(exchange.getHostAndPort());
 		if(vhost == null) {
 			exchange.getResponseSender().send("Host unknown, create a VirtualHost first");
