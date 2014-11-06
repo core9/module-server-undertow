@@ -244,6 +244,11 @@ public class RequestImpl implements Request {
 			exchange.setResponseCookie(((CookieImpl) cookie).getServerCookie());
 		}
 	}
+	
+	@Override
+	public String getScheme() {
+		return exchange.getRequestScheme();
+	}
 
 	@Override
 	public String getHostname() {
