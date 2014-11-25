@@ -72,6 +72,9 @@ public class UndertowServerImpl implements Server {
 
 	@Override
 	public void execute() {
+		if(System.getenv("PORT") != null) {
+			port = Integer.parseInt(System.getenv("PORT"));
+		}
 		if(System.getProperty("PORT") != null) {
 			port = Integer.parseInt(System.getProperty("PORT")); 
 		}
