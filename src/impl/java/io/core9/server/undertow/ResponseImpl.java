@@ -168,6 +168,8 @@ public class ResponseImpl implements Response {
 		this.vhost = vhost;
 		this.exchange = exchange;
 		this.addGlobal("hostname", vhost.getHostname());
+		this.addGlobal("path", exchange.getRequestPath());
+		this.addGlobal("query", exchange.getQueryString());
 	}
 
 	private String processTemplate() throws Exception {

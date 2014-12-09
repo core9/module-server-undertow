@@ -20,7 +20,6 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -37,6 +36,7 @@ public class RequestImpl implements Request {
 
 	private HttpServerExchange exchange;
 	private final VirtualHost vhost;
+	private Map<String, Deque<String>> queryParams;
 	private Map<String, Object> params;
 	private Map<String, Object> context;
 	private ResponseImpl response;
@@ -121,13 +121,7 @@ public class RequestImpl implements Request {
 	public RequestImpl(VirtualHost vhost, HttpServerExchange exchange) {
 		this.exchange = exchange;
 		this.vhost = vhost;
-		if (exchange.getQueryParameters().size() > 0) {
-			this.params = new HashMap<String, Object>();
-			for (Entry<String, Deque<String>> entry : exchange.getQueryParameters().entrySet()) {
-				// FIXME: Handle all query params (is multiple possible?)
-				this.params.put(entry.getKey(), entry.getValue().getLast());
-			}
-		}
+		this.queryParams = exchange.getQueryParameters();
 	}
 
 	public HttpServerExchange getExchange() {
@@ -142,6 +136,12 @@ public class RequestImpl implements Request {
 	@Override
 	public Map<String, Object> getParams() {
 		if (params != null) {
+			return params;
+		}
+		if (queryParams != null) {
+			queryParams.forEach((name, value) -> {
+				params.put(name, value.getLast());
+			});
 			return params;
 		}
 		return params = new HashMap<>();
@@ -258,6 +258,11 @@ public class RequestImpl implements Request {
 	@Override
 	public String getSourceHost() {
 		return exchange.getSourceAddress().getHostName();
+	}
+
+	@Override
+	public Map<String, Deque<String>> getQueryParams() {
+		return queryParams;
 	}
 
 }
