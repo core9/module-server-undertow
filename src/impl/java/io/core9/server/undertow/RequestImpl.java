@@ -138,13 +138,13 @@ public class RequestImpl implements Request {
 		if (params != null) {
 			return params;
 		}
+		params = new HashMap<String, Object>();
 		if (queryParams != null) {
 			queryParams.forEach((name, value) -> {
 				params.put(name, value.getLast());
 			});
-			return params;
 		}
-		return params = new HashMap<>();
+		return params;
 	}
 
 	@Override
