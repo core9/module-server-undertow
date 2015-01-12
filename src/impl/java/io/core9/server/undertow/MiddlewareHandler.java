@@ -7,7 +7,6 @@ import io.core9.plugin.server.handler.Middleware;
 import io.core9.plugin.server.request.Response;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
-import io.undertow.util.Headers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -97,8 +96,17 @@ public class MiddlewareHandler implements HttpHandler {
 					if(alias != null) {
 						response.sendRedirect(307, alias);
 					} else {
-						//response.setStatusCode(404);
-						response.end("Not found");
+						boolean hasNotFoundHandler = false;
+						for(Binding binding : VHOST_BINDINGS.get(req.getVirtualHost())) {
+							if(binding.getPath().equals("404")) {
+								binding.handle(req);
+								hasNotFoundHandler = true;
+								break;
+							}
+						}
+						if(!hasNotFoundHandler) {
+							response.end("Not found");
+						}
 					}
 				}
 			}
