@@ -99,7 +99,7 @@ public class MiddlewareHandler implements HttpHandler {
 						boolean hasNotFoundHandler = false;
 						for(Binding binding : VHOST_BINDINGS.get(req.getVirtualHost())) {
 							if(binding.getPath().equals("404")) {
-								binding.handle(req);
+								binding.getMiddleware().handle(req);
 								hasNotFoundHandler = true;
 								break;
 							}
