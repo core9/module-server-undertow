@@ -167,7 +167,7 @@ public class ResponseImpl implements Response {
 	public ResponseImpl(VirtualHost vhost, HttpServerExchange exchange) {
 		this.vhost = vhost;
 		this.exchange = exchange;
-		this.addGlobal("hostname", vhost.getHostname());
+		this.addGlobal("hostname", exchange.getHostAndPort());
 		this.addGlobal("path", exchange.getRequestPath());
 		this.addGlobal("query", exchange.getQueryString());
 	}

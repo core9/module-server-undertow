@@ -78,7 +78,11 @@ public class MiddlewareHandler implements HttpHandler {
 				+ "client: " + exchange.getSourceAddress().getHostString());
 		VirtualHost vhost = hosts.get(exchange.getHostAndPort());
 		if(vhost == null) {
-			exchange.getResponseSender().send("Host unknown, create a VirtualHost first");
+			RequestImpl req = new RequestImpl(null, exchange);
+			for(Binding binding : BINDINGS) {
+				binding.handle(req);
+			}
+			endRequest(req);
 		} else {
 			RequestImpl req = new RequestImpl(vhost, exchange);
 			for(Binding binding : BINDINGS) {
@@ -87,26 +91,30 @@ public class MiddlewareHandler implements HttpHandler {
 			for(Binding binding : VHOST_BINDINGS.get(req.getVirtualHost())) {
 				binding.handle(req);
 			}
-			Response response = req.getResponse();
-			if(!response.isEnded()) {
-				if(response.getTemplate() != null || response.getValues().size() > 0) {
-					response.end();
+			endRequest(req);
+		}
+	}
+	
+	private void endRequest(RequestImpl req) {
+		Response response = req.getResponse();
+		if(!response.isEnded()) {
+			if(response.getTemplate() != null || response.getValues().size() > 0) {
+				response.end();
+			} else {
+				String alias = hostManager.getURLAlias(req.getVirtualHost(), req.getPath());
+				if(alias != null) {
+					response.sendRedirect(307, alias);
 				} else {
-					String alias = hostManager.getURLAlias(req.getVirtualHost(), req.getPath());
-					if(alias != null) {
-						response.sendRedirect(307, alias);
-					} else {
-						boolean hasNotFoundHandler = false;
-						for(Binding binding : VHOST_BINDINGS.get(req.getVirtualHost())) {
-							if(binding.getPath().equals("404")) {
-								binding.getMiddleware().handle(req);
-								hasNotFoundHandler = true;
-								break;
-							}
+					boolean hasNotFoundHandler = false;
+					for(Binding binding : VHOST_BINDINGS.get(req.getVirtualHost())) {
+						if(binding.getPath().equals("404")) {
+							binding.getMiddleware().handle(req);
+							hasNotFoundHandler = true;
+							break;
 						}
-						if(!hasNotFoundHandler) {
-							response.end("Not found");
-						}
+					}
+					if(!hasNotFoundHandler) {
+						response.end("Not found");
 					}
 				}
 			}
