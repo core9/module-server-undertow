@@ -37,7 +37,7 @@ public class RequestImpl implements Request {
 	private HttpServerExchange exchange;
 	private final VirtualHost vhost;
 	private Map<String, Deque<String>> queryParams;
-	private Map<String, Object> params;
+	private Map<String, Object> pathParams;
 	private Map<String, Object> context;
 	private ResponseImpl response;
 
@@ -134,17 +134,11 @@ public class RequestImpl implements Request {
 	}
 
 	@Override
-	public Map<String, Object> getParams() {
-		if (params != null) {
-			return params;
+	public Map<String, Object> getPathParams() {
+		if (pathParams != null) {
+			return pathParams;
 		}
-		params = new HashMap<String, Object>();
-		if (queryParams != null) {
-			queryParams.forEach((name, value) -> {
-				params.put(name, value.getLast());
-			});
-		}
-		return params;
+		return pathParams = new HashMap<String, Object>();
 	}
 
 	@Override
