@@ -82,7 +82,7 @@ public class MiddlewareHandler implements HttpHandler {
 			for(Binding binding : BINDINGS) {
 				binding.handle(req);
 			}
-			endRequest(req);
+			endRequest(req, null);
 		} else {
 			RequestImpl req = new RequestImpl(vhost, exchange);
 			for(Binding binding : BINDINGS) {
@@ -91,14 +91,14 @@ public class MiddlewareHandler implements HttpHandler {
 			for(Binding binding : VHOST_BINDINGS.get(req.getVirtualHost())) {
 				binding.handle(req);
 			}
-			endRequest(req);
+			endRequest(req, vhost);
 		}
 	}
 	
-	private void endRequest(RequestImpl req) {
+	private void endRequest(RequestImpl req, VirtualHost vhost) {
 		Response response = req.getResponse();
 		if(!response.isEnded()) {
-			if(response.getTemplate() != null || response.getValues().size() > 0) {
+			if(response.getTemplate() != null || response.getValues().size() > 0 || vhost == null) {
 				response.end();
 			} else {
 				String alias = hostManager.getURLAlias(req.getVirtualHost(), req.getPath());
