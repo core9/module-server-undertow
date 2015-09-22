@@ -90,8 +90,8 @@ public class RequestImpl implements Request {
 												folder = folder.substring(0, folder.indexOf(";") -1);
 											}
 										};
-										files.add(new FileUploadImpl(folder + value.getFileName(), 
-												value.getHeaders().getFirst(Headers.CONTENT_TYPE_STRING), 
+										files.add(new FileUploadImpl(folder + value.getFileName(),
+												value.getHeaders().getFirst(Headers.CONTENT_TYPE_STRING),
 												value.getFile().getPath()));
 									}
 								}
@@ -238,7 +238,7 @@ public class RequestImpl implements Request {
 			exchange.setResponseCookie(((CookieImpl) cookie).getServerCookie());
 		}
 	}
-	
+
 	@Override
 	public String getScheme() {
 		return exchange.getRequestScheme();
@@ -257,6 +257,15 @@ public class RequestImpl implements Request {
 	@Override
 	public Map<String, Deque<String>> getQueryParams() {
 		return queryParams;
+	}
+
+	@Override
+	public Map<String, String> getParams() {
+		Map<String, String> res = new HashMap<String, String>();
+		for(String param : queryParams.keySet()){
+			res.put(param, queryParams.get(param).getFirst());
+		}
+		return res;
 	}
 
 }
