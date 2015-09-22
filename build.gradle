@@ -25,5 +25,5 @@ dependencies {
 	
 	implCompile 'io.core9:module-template-engine-closure-api:+'
 	implCompile 'io.undertow:undertow-core:+'
-	implCompile 'net.minidev:json-smart:+'
+	implCompile 'net.minidev:json-smart:2.1.1'
 }
