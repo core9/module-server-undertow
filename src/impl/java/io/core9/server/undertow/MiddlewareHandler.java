@@ -72,7 +72,7 @@ public class MiddlewareHandler implements HttpHandler {
 			exchange.dispatch(this);
 			return;
 		}
-		LOGGER.debug("Handling request on "
+		LOGGER.info("Handling request on "
 				+ "host: " + exchange.getHostAndPort() + ", "
 				+ "path: " + exchange.getRequestPath() + ", "
 				+ "client: " + exchange.getSourceAddress().getHostString());
