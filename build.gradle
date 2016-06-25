@@ -24,6 +24,6 @@ dependencies {
 	apiCompile 'io.core9:module-server-api:+'
 	
 	implCompile 'io.core9:module-template-engine-closure-api:+'
-	implCompile 'io.undertow:undertow-core:+'
+	implCompile 'io.undertow:undertow-core:1.2.11.Final'
 	implCompile 'net.minidev:json-smart:2.1.1'
 }
